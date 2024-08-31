@@ -1,7 +1,6 @@
 "use client";
 
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
-
 export default function PlaceholdersAndVanishInputDemo() {
   const placeholders = [
     "What's the first rule of Fight Club?",
@@ -16,6 +15,7 @@ export default function PlaceholdersAndVanishInputDemo() {
   };
   const onSubmit = (e) => {
     e.preventDefault();
+
     console.log("submitted");
   };
   return (

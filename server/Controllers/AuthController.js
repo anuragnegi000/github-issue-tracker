@@ -41,7 +41,7 @@ router.post('/login',loginValidation,async(req,res)=>{
     }
     const token = jwt.sign({id:user._id,email:user.email},process.env.JWT_SECRET,{expiresIn: '24h'});
 
-    res.json({token,userId: user._id});
+    res.status(200).json({message:"Login Success",success:true,token,email,id:user._id,name:user.username});
 });
 
 

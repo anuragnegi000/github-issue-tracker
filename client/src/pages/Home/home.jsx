@@ -15,6 +15,7 @@ export default function Home() {
       <h2 className="relative z-10 text-3xl md:text-5xl md:leading-tight max-w-5xl mx-auto text-center tracking-tight font-medium bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-white to-white flex items-center gap-2 md:gap-8">
         <span>Github Issue-Tracker</span>
       </h2>
+      <span className="text-sml tracking-tight font-medium bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-white to-white flex items-center gap-2 md:gap-8">By Mohd Shaheer & Anurag Negi</span>
       <PlaceholdersAndVanishInputDemo />
       <div className="flex flex-col gap-6">
         <div className="flex flex-row items-center ml-[6rem] justify-center gap-4 relative z-10">
