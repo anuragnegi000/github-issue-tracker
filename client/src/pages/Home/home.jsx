@@ -50,7 +50,7 @@ export default function Home() {
           <Button className="border border-white rounded-md p-2">DELETE</Button>
         </div>
       </div>
-
+        //Render
       <ShootingStars className="absolute inset-0" />
       <StarsBackground className="absolute inset-0" />
     </div>
