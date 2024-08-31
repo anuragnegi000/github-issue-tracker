@@ -63,7 +63,7 @@ router.delete("/:repoId", async (req, res) => {
   }
 });
 
-router.put("/:repoId", async (req, res) => {
+router.put("/update", async (req, res) => {
   const { repo_id, latest_issue_id } = req.body;
   const repo = await RepoModel.findById(repo_id);
   repo.last_issue_id = latest_issue_id;
