@@ -39,9 +39,9 @@ export default function Signin() {
         localStorage.setItem("token", token);
         localStorage.setItem("loggedInUser", name);
         localStorage.setItem("UserId", id);
-        setTimeout(() => {
+        
           navigate("/");
-        }, 1000);
+        
       } else if (error) {
         const details = error?.details[0].message;
         console.log(details);

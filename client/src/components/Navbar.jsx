@@ -7,6 +7,7 @@ export default function Navbar() {
   const handleLogout = (e) =>{
     localStorage.removeItem('token');
     localStorage.removeItem('loggedInUser');
+    localStorage.removeItem('UserId');
     setTimeout(()=>{
         navigate('/signin');
     },1000);
