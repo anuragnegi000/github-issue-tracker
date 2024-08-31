@@ -19,6 +19,7 @@ router.get("/:userID", async (req, res) => {
 
 router.post("/create", async (req, res) => {
   try {
+    
     const { repo_url, UserId } = req.body;
 
     const repo = await RepoModel.findOne({ repo_url });
@@ -28,6 +29,7 @@ router.post("/create", async (req, res) => {
     const data = repo_url.slice(19);
     const repo_name = data.split("/")[1];
     const response = await fetch(`https://api.github.com/repos/${data}/issues`);
+    console.log(`https://api.github.com/repos/${data}/issues`)
     const issues = await response.json();
     const latest_issue = issues[0];
     const last_issue_id = latest_issue.number;
@@ -43,6 +45,7 @@ router.post("/create", async (req, res) => {
     const user = await UserModel.findById({ _id: UserId });
     user.repos.push(newRepo);
     await user.save();
+    return res.json({ success: true, message: "repo created successfully" });
   } catch (error) {
     return res.json({ message: error });
   }
@@ -60,7 +63,7 @@ router.delete("/:repoId", async (req, res) => {
   }
 });
 
-router.put("/:repoId", async (req, res) => {
+router.put("/update", async (req, res) => {
   const { repo_id, latest_issue_id } = req.body;
   const repo = await RepoModel.findById(repo_id);
   repo.last_issue_id = latest_issue_id;
