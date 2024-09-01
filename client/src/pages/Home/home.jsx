@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [data, setData] = useState([]);
-  const [latest_issue,setLatestIssue] = useState(-1);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -15,18 +14,19 @@ export default function Home() {
         `http://localhost:8080/repos/${localStorage.getItem("UserId")}`
       );
       const result = await response.json();
-      setData(result.repos); // assuming repos is an array
-      //   console.log(result[0].number)
+      setData(result.repos);
     };
     fetchData();
   }, []);
 
   const checkRepo = async (repo_id) => {
+    if (window.localStorage.getItem("token") == null) {
+      return;
+    }
     for (let i = 0; i < data.length; i++) {
       const currentRepo = data[i].repo_url;
       console.log(currentRepo);
 
-      // Assuming repo_url is something like "https://github.com/user/repo"
       const repoDetails = currentRepo.split("/").slice(-2);
       const repo_name = repoDetails[1];
       const repo_user = repoDetails[0];
@@ -37,33 +37,28 @@ export default function Home() {
 
       const issues = await response.json();
       const latest_issue = issues[0]?.number;
-      setLatestIssue(latest_issue);
       console.log(latest_issue);
+      if (data[i].last_issue_id < latest_issue) {
+        const id = data[i]._id;
+        console.log("EK BAAR SIRF");
+        const response = await fetch("http://localhost:8080/repos/update", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            id,
+            latest_issue_id: latest_issue,
+          }),
+        });
+      }
     }
-
-    // Make sure that latest_issue_id is properly defined before passing it to the fetch call
-    // Uncomment and use the following if required
-    
-    const  test = await fetch("http://localhost:8080/repos/update",{
-        method:"PUT",
-        headers:{
-            "Content-Type":"application/json",
-            Authorization:`Bearer ${localStorage.getItem("token")}`
-        },
-        body: JSON.stringify({
-            repo_id,
-            latest_issue_id: latest_issue
-        })
-    });
-
-    test();
-    
   };
 
-  // Ensure you call checkRepo with proper arguments if needed
-  setTimeout(() => {
-    checkRepo(); // You may need to pass repo_id if required
-  }, 3000);
+  setInterval(() => {
+    checkRepo();
+  }, 30000);
   return (
     <div className="h-screen rounded-md bg-neutral-900 flex flex-col items-center justify-center relative w-full">
       <h2 className="relative z-10 text-3xl md:text-5xl md:leading-tight max-w-5xl mx-auto text-center tracking-tight font-medium bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-white to-white flex items-center gap-2 md:gap-8">
