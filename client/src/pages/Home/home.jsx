@@ -14,12 +14,13 @@ export default function Home() {
         `http://localhost:8080/repos/${localStorage.getItem("UserId")}`
       );
       const result = await response.json();
+      console.log(result.repos);
       setData(result.repos);
     };
     fetchData();
   }, []);
 
-  const checkRepo = async (repo_id) => {
+  const checkRepo = async () => {
     if (window.localStorage.getItem("token") == null) {
       return;
     }
@@ -41,7 +42,7 @@ export default function Home() {
       if (data[i].last_issue_id < latest_issue) {
         const id = data[i]._id;
         console.log("EK BAAR SIRF");
-        const response = await fetch("http://localhost:8080/repos/update", {
+        await fetch("http://localhost:8080/repos/update", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -56,9 +57,15 @@ export default function Home() {
     }
   };
 
-  setInterval(() => {
-    checkRepo();
-  }, 30000);
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      checkRepo();
+    }, 45000);
+
+    
+    return () => clearInterval(intervalId);
+  }, [data]);
+
   return (
     <div className="h-screen rounded-md bg-neutral-900 flex flex-col items-center justify-center relative w-full">
       <h2 className="relative z-10 text-3xl md:text-5xl md:leading-tight max-w-5xl mx-auto text-center tracking-tight font-medium bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-white to-white flex items-center gap-2 md:gap-8">
@@ -85,7 +92,6 @@ export default function Home() {
           </div>
         ))}
       </div>
-      {/* Render Shooting Stars and Stars Background */}
       <ShootingStars className="absolute inset-0" />
       <StarsBackground className="absolute inset-0" />
     </div>
