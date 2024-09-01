@@ -66,8 +66,15 @@ router.delete("/:repoId", async (req, res) => {
 router.put("/update", async (req, res) => {
   const { repo_id, latest_issue_id } = req.body;
   const repo = await RepoModel.findById(repo_id);
-  repo.last_issue_id = latest_issue_id;
+  console.log(repo_id);
+  if(repo && repo.last_issue_id){
+  if (latest_issue_id!=null || latest_issue_id!=undefined){
+    repo.last_issue_id = latest_issue_id;
+  }
+
+  
   await repo.save();
+  }
 });
 
 module.exports = router;

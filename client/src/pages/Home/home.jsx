@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [data, setData] = useState([]);
+  const [latest_issue,setLatestIssue] = useState(-1);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,13 +37,14 @@ export default function Home() {
 
       const issues = await response.json();
       const latest_issue = issues[0]?.number;
+      setLatestIssue(latest_issue);
       console.log(latest_issue);
     }
 
     // Make sure that latest_issue_id is properly defined before passing it to the fetch call
     // Uncomment and use the following if required
-    /*
-    const response = await fetch("http://localhost:8080/repos/update",{
+    
+    const  test = await fetch("http://localhost:8080/repos/update",{
         method:"PUT",
         headers:{
             "Content-Type":"application/json",
@@ -53,7 +55,9 @@ export default function Home() {
             latest_issue_id: latest_issue
         })
     });
-    */
+
+    test();
+    
   };
 
   // Ensure you call checkRepo with proper arguments if needed
