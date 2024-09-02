@@ -43,17 +43,20 @@ export default function Home() {
       const issues = await response.json();
       const latest_issue = issues[0]?.number;
       console.log(latest_issue);
-      if (data[i].last_issue_id < latest_issue) {
+      const email = localStorage.getItem("loggedInEmail");
+      if (data[i].last_issue_id<latest_issue) {
+        
         await fetch("http://localhost:8080/sendmail",{
           method:"POST",
-          header:{
+          headers:{
             "Content-Type":"application/json",
             "Authorization":`Bearer ${localStorage.getItem("token")}`
           },
           body:JSON.stringify({
-            email:localStorage.getItem("loggedInEmail"),
-          })
+            email:email},
+          )
         });
+        console.log(localStorage.getItem("loggedInEmail"));
         const id = data[i]._id;
         console.log("EK BAAR SIRF");
         await fetch("http://localhost:8080/repos/update", {
@@ -67,6 +70,9 @@ export default function Home() {
             latest_issue_id: latest_issue,
           }),
         });
+        const copydata =  {...data};
+        copydata[i].last_issue_id = latest_issue;
+        setData(copydata);
       }
     }
   };

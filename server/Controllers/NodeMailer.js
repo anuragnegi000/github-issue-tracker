@@ -1,38 +1,45 @@
 const UserModel = require("../Models/Users");
 
-const nodemailer = require("nodemailer");
+const nodemailer = require('nodemailer');
 
 const express = require("express");
-
+require('dotenv').config();
 const router = express.Router();
 
 router.post("/sendmail", async (req, res) => {
-  let user = await UserModel.findOne({ email: req.body.email });
+  console.log(req.body);
+  const {email} = req.body;
+  let user = await UserModel.findOne({ email: email });
+  console.log("email is ",email,"user is ",user);
   if(!user){
     res.status(400).json({message:"User not found"});
   }
-  let transporter = nodemailer.createTransport({
+  const auth = nodemailer.createTransport({
     service: "gmail",
+    secure: true,
+    port: 465,
     auth: {
-      user: "your email",
-      password: "your smtp password from mail",
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_KEY,
     },
   });
-  
-  let mailOptions = {
-    from: "your mail",
-    to: user,
-    subject: "Github Issue Tracker",
-    text: "Hello, this is an email from Github Issue Tracker",
+  const receiver = {
+    from: process.env.MAIL_USER,
+    to: email,
+    subject: "gay",
+    text: "Hello bhadwa farji friend",
   };
-  transporter.sendMail(mailOptions, (error, info) => {
+
+  auth.sendMail(receiver, (error, emailResponse) => {
     if (error) {
-      console.log(error);
+      console.error(error ? error.message : "Unknown error occurred");
+      res.end("Error sending email");
     } else {
-      console.log("Email sent successfully" + info.response);
-      res.json({message:"Email sent successfully"});
+      console.log("Email sent successfully: " + emailResponse.response);
+      res.end("Email sent successfully");
     }
   });
 });
 
+module.exports = router;
 

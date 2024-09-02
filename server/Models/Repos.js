@@ -8,7 +8,6 @@ const RepoSchema = new mongoose.Schema({
     repo_url:{
         type: String,
         required: true,
-        unique: true,
     },
     last_issue_id:{
         type: String,
