@@ -1,5 +1,3 @@
-// src/pages/Home.js
-
 import React, { useEffect } from "react";
 import { ShootingStars } from "@/components/ui/shooting-stars";
 import { StarsBackground } from "@/components/ui/stars-background";
@@ -8,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useData } from "../Home/dataContext";
 
 export default function Home() {
-  const { data, fetchData } = useData();
+  const { data, setData, fetchData } = useData();
 
   useEffect(() => {
     fetchData();
@@ -62,7 +60,7 @@ export default function Home() {
       }
     }
     if (dataUpdated) {
-      fetchData(); 
+      fetchData();
     }
   };
 
@@ -73,6 +71,15 @@ export default function Home() {
 
     return () => clearInterval(intervalId);
   }, [data]);
+
+  const deleteRepo = async (repo_id) => {
+    await fetch(`http://localhost:8080/repos/${repo_id}`, {
+      method: "DELETE",
+    });
+    setData((prevData) => {
+      return prevData.filter((item) => item._id !== repo_id);
+    });
+  };
 
   return (
     <div className="h-screen rounded-md bg-neutral-900 flex flex-col items-center justify-center relative w-full">
@@ -95,7 +102,10 @@ export default function Home() {
                   {item.repo_name}
                 </h1>
               </div>
-              <Button className="border border-white rounded-md p-2">
+              <Button
+                className="border border-white rounded-md p-2"
+                onClick={() => deleteRepo(item._id)}
+              >
                 DELETE
               </Button>
             </div>
