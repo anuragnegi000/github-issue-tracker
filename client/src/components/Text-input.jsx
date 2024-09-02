@@ -1,9 +1,13 @@
+// src/components/Text-input.js
+
 "use client";
 
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
-// import axios from "axios";
 import { useState } from "react";
+import { useData } from "../pages/Home/dataContext";
+
 export default function PlaceholdersAndVanishInputDemo() {
+  const { fetchData } = useData();
   const placeholders = [
     "What's the first rule of Fight Club?",
     "Who is Tyler Durden?",
@@ -28,11 +32,17 @@ export default function PlaceholdersAndVanishInputDemo() {
           repo_url: url,
         }),
       });
-      console.log(data)
+
+      if (response.ok) {
+        console.log("Repository added successfully");
+        setData(""); // Clear input after submission
+        fetchData(); // Re-fetch data after successful submission
+      } else {
+        console.error("Failed to add repository");
+      }
     } catch (error) {
-      console.log(error);
+      console.log("Error:", error);
     }
-    console.log(response);
   };
 
   const handleChange = (e) => {
@@ -40,11 +50,12 @@ export default function PlaceholdersAndVanishInputDemo() {
   };
 
   return (
-    <div className="h-[10rem] w-full flex flex-col justify-center  items-center px-4">
+    <div className="h-[10rem] w-full flex flex-col justify-center items-center px-4">
       <PlaceholdersAndVanishInput
         placeholders={placeholders}
         onChange={handleChange}
         onSubmit={onSubmit}
+        value={data}
       />
     </div>
   );

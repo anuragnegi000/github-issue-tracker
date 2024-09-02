@@ -1,26 +1,16 @@
-import React, { useEffect, useState } from "react";
+// src/pages/Home.js
+
+import React, { useEffect } from "react";
 import { ShootingStars } from "@/components/ui/shooting-stars";
 import { StarsBackground } from "@/components/ui/stars-background";
 import PlaceholdersAndVanishInputDemo from "../../components/Text-input";
 import { Button } from "@/components/ui/button";
+import { useData } from "../Home/dataContext";
 
 export default function Home() {
-  const [data, setData] = useState([]);
+  const { data, fetchData } = useData();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:8080/repos/${localStorage.getItem("UserId")}`
-        );
-        const result = await response.json();
-        console.log(result.repos);
-        setData(result.repos || []); // Ensure `data` is always an array
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-        setData([]); // Handle errors by setting data to an empty array
-      }
-    };
     fetchData();
   }, []);
 
@@ -28,10 +18,9 @@ export default function Home() {
     if (window.localStorage.getItem("token") == null) {
       return;
     }
+    let dataUpdated = false;
     for (let i = 0; i < data.length; i++) {
       const currentRepo = data[i].repo_url;
-      console.log(currentRepo);
-
       const repoDetails = currentRepo.split("/").slice(-2);
       const repo_name = repoDetails[1];
       const repo_user = repoDetails[0];
@@ -42,23 +31,23 @@ export default function Home() {
 
       const issues = await response.json();
       const latest_issue = issues[0]?.number;
-      console.log(latest_issue);
-      const email = localStorage.getItem("loggedInEmail");
-      if (data[i].last_issue_id<latest_issue) {
-        
-        await fetch("http://localhost:8080/sendmail",{
-          method:"POST",
-          headers:{
-            "Content-Type":"application/json",
-            "Authorization":`Bearer ${localStorage.getItem("token")}`
+
+      if (data[i].last_issue_id < latest_issue) {
+        dataUpdated = true;
+
+        await fetch("http://localhost:8080/sendmail", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          body:JSON.stringify({
-            email:email},
-          )
+          body: JSON.stringify({
+            email: localStorage.getItem("loggedInEmail"),
+          }),
         });
-        console.log(localStorage.getItem("loggedInEmail"));
+
         const id = data[i]._id;
-        console.log("EK BAAR SIRF");
+
         await fetch("http://localhost:8080/repos/update", {
           method: "PUT",
           headers: {
@@ -70,10 +59,10 @@ export default function Home() {
             latest_issue_id: latest_issue,
           }),
         });
-        const copydata =  {...data};
-        copydata[i].last_issue_id = latest_issue;
-        setData(copydata);
       }
+    }
+    if (dataUpdated) {
+      fetchData(); 
     }
   };
 
@@ -95,21 +84,22 @@ export default function Home() {
       </span>
       <PlaceholdersAndVanishInputDemo />
       <div className="flex flex-col gap-6">
-        {Array.isArray(data) && data.map((item, index) => (
-          <div
-            key={index}
-            className="flex flex-row items-center ml-[6rem] justify-center gap-4 relative z-10"
-          >
-            <div className="flex items-center justify-center w-[40rem] h-20 border border-white rounded-md p-2">
-              <h1 className="relative z-10 text-3xl md:text-xl md:leading-tight max-w-5xl mx-auto text-center tracking-tight font-medium bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-white to-white flex items-center gap-2 md:gap-8">
-                {item.repo_name}
-              </h1>
+        {Array.isArray(data) &&
+          data.map((item, index) => (
+            <div
+              key={index}
+              className="flex flex-row items-center ml-[6rem] justify-center gap-4 relative z-10"
+            >
+              <div className="flex items-center justify-center w-[40rem] h-20 border border-white rounded-md p-2">
+                <h1 className="relative z-10 text-3xl md:text-xl md:leading-tight max-w-5xl mx-auto text-center tracking-tight font-medium bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-white to-white flex items-center gap-2 md:gap-8">
+                  {item.repo_name}
+                </h1>
+              </div>
+              <Button className="border border-white rounded-md p-2">
+                DELETE
+              </Button>
             </div>
-            <Button className="border border-white rounded-md p-2">
-              DELETE
-            </Button>
-          </div>
-        ))}
+          ))}
       </div>
       <ShootingStars className="absolute inset-0" />
       <StarsBackground className="absolute inset-0" />
