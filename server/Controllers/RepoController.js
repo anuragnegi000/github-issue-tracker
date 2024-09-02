@@ -21,9 +21,10 @@ router.post("/create", async (req, res) => {
   try {
     
     const { repo_url, UserId } = req.body;
+    console.log(repo_url)
+    console.log(UserId)
 
     const repo = await RepoModel.findOne({ repo_url });
-    console.log(repo);
     if (repo && repo.UserId == UserId) {
       return res.json({ message: "repository already exists !" });
     }
