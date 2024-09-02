@@ -1,9 +1,9 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 import {
   IconBrandGithub,
   IconBrandGoogle,
@@ -11,10 +11,57 @@ import {
 } from "@tabler/icons-react";
 
 export default function Signup() {
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Form submitted");
+  
+  const [data, setData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const navigate = useNavigate(); // Initialize navigate
+
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission
+
+    const { username, email, password } = data;
+    console.log("triggered");
+    console.log(username, email, password);
+
+    if (!username || !email || !password) {
+      return handleError("Username, email, and password are required");
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+        }),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        const { token, email, id } = result;
+        localStorage.setItem("token", token);
+        localStorage.setItem("loggedInEmail", email); 
+        localStorage.setItem("UserId", id);
+        navigate("/"); // Navigate to the home page after successful signup
+        console.log("navigated");
+      } else {
+        handleError(result.message || "Signup failed");
+      }
+    } catch (error) {
+      console.log(error);
+      handleError("An error occurred during signup. Please try again.");
+    }
   };
+
   return (
     <div className="items-center justify-center max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
@@ -22,22 +69,46 @@ export default function Signup() {
       </h2>
 
       <form className="my-8" onSubmit={handleSubmit}>
-      <LabelInputContainer className="mb-4">
-          <Label htmlFor="email">Username</Label>
-          <Input id="email" placeholder="calc.com" type="username" />
+        <LabelInputContainer className="mb-4">
+          <Label htmlFor="username">Username</Label>
+          <Input
+            onChange={(e) => {
+              setData({ ...data, username: e.target.value });
+            }}
+            id="username"
+            placeholder="calc.com"
+            type="text"
+          />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="email">Email Address</Label>
-          <Input id="email" placeholder="projectmayhem@fc.com" type="email" />
+          <Input
+            onChange={(e) => {
+              setData({ ...data, email: e.target.value });
+            }}
+            id="email"
+            placeholder="projectmayhem@fc.com"
+            type="email"
+          />
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" placeholder="••••••••" type="password" />
+          <Input
+            onChange={(e) => {
+              setData({ ...data, password: e.target.value });
+            }}
+            id="password"
+            placeholder="••••••••"
+            type="password"
+          />
         </LabelInputContainer>
         <LabelInputContainer className="mb-8">
-          <Label htmlFor="twitterpassword">Confirm Password</Label>
+          <Label htmlFor="confirmPassword">Confirm Password</Label>
           <Input
-            id="ConfirmPassword"
+            onChange={(e) => {
+              setData({ ...data, confirmPassword: e.target.value });
+            }}
+            id="confirmPassword"
             placeholder="••••••••"
             type="password"
           />
@@ -56,7 +127,7 @@ export default function Signup() {
         <div className="flex flex-col space-y-4">
           <button
             className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-            type="submit"
+            type="button"
           >
             <IconBrandGithub className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
             <span className="text-neutral-700 dark:text-neutral-300 text-sm">
@@ -76,7 +147,7 @@ export default function Signup() {
           </button>
           <button
             className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-            type="submit"
+            type="button"
           >
             <IconBrandOnlyfans className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
             <span className="text-neutral-700 dark:text-neutral-300 text-sm">
