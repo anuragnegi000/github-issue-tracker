@@ -1,4 +1,3 @@
-"use client";
 import React, { useEffect, useState } from "react";
 import { ShootingStars } from "@/components/ui/shooting-stars";
 import { StarsBackground } from "@/components/ui/stars-background";
@@ -10,12 +9,17 @@ export default function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(
-        `http://localhost:8080/repos/${localStorage.getItem("UserId")}`
-      );
-      const result = await response.json();
-      console.log(result.repos);
-      setData(result.repos);
+      try {
+        const response = await fetch(
+          `http://localhost:8080/repos/${localStorage.getItem("UserId")}`
+        );
+        const result = await response.json();
+        console.log(result.repos);
+        setData(result.repos || []); // Ensure `data` is always an array
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+        setData([]); // Handle errors by setting data to an empty array
+      }
     };
     fetchData();
   }, []);
@@ -40,6 +44,16 @@ export default function Home() {
       const latest_issue = issues[0]?.number;
       console.log(latest_issue);
       if (data[i].last_issue_id < latest_issue) {
+        await fetch("http://localhost:8080/sendmail",{
+          method:"POST",
+          header:{
+            "Content-Type":"application/json",
+            "Authorization":`Bearer ${localStorage.getItem("token")}`
+          },
+          body:JSON.stringify({
+            email:localStorage.getItem("loggedInEmail"),
+          })
+        });
         const id = data[i]._id;
         console.log("EK BAAR SIRF");
         await fetch("http://localhost:8080/repos/update", {
@@ -62,7 +76,6 @@ export default function Home() {
       checkRepo();
     }, 45000);
 
-    
     return () => clearInterval(intervalId);
   }, [data]);
 
@@ -76,7 +89,7 @@ export default function Home() {
       </span>
       <PlaceholdersAndVanishInputDemo />
       <div className="flex flex-col gap-6">
-        {data.map((item, index) => (
+        {Array.isArray(data) && data.map((item, index) => (
           <div
             key={index}
             className="flex flex-row items-center ml-[6rem] justify-center gap-4 relative z-10"

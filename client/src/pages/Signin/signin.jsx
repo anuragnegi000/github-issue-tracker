@@ -33,11 +33,11 @@ export default function Signin() {
         body: JSON.stringify(LoginInfo),
       });
       const result = await response.json();
-      const { success, message, token, id,name, error } = result;
+      const { success, message, token, id,email, error } = result;
       if (success) {
         console.log(message);
         localStorage.setItem("token", token);
-        localStorage.setItem("loggedInUser", name);
+        localStorage.setItem("loggedInEmail", email);
         localStorage.setItem("UserId", id);
         
           navigate("/");
