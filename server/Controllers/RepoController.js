@@ -28,6 +28,7 @@ router.post("/create", async (req, res) => {
     if (repo && repo.UserId == UserId) {
       return res.json({ message: "repository already exists !" });
     }
+    console.log("reached")
     const data = repo_url.slice(19);
     const repo_name = data.split("/")[1];
     const response = await fetch(`https://api.github.com/repos/${data}/issues`);
@@ -59,7 +60,14 @@ router.delete("/:repoId", async (req, res) => {
     const repo = await RepoModel.findById(id);
     const userid = repo.UserId;
     await UserModel.updateOne({ _id: userid }, { $pull: { repos: id } });
-    await RepoModel.deleteOne({ _id: id });
+    const status = await RepoModel.deleteOne({ _id: id });
+    console.log("deleted")
+    if(status){
+      return res.json({
+        success: true,
+        message: "repository deleted successfully",
+    })
+    }
   } catch (error) {
     return res.json({ message: error });
   }

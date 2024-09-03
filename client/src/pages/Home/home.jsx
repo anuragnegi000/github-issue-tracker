@@ -4,6 +4,7 @@ import { StarsBackground } from "@/components/ui/stars-background";
 import PlaceholdersAndVanishInputDemo from "../../components/Text-input";
 import { Button } from "@/components/ui/button";
 import { useData } from "../Home/dataContext";
+import { Popover } from "@/components/ui/popover";
 
 export default function Home() {
   const { data, setData, fetchData } = useData();
@@ -101,6 +102,7 @@ export default function Home() {
                 <h1 className="relative z-10 text-3xl md:text-xl md:leading-tight max-w-5xl mx-auto text-center tracking-tight font-medium bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-white to-white flex items-center gap-2 md:gap-8">
                   {item.repo_name}
                 </h1>
+                <Popover/>
               </div>
               <Button
                 className="border border-white rounded-md p-2"

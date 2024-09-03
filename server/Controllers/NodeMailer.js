@@ -26,10 +26,10 @@ router.post("/sendmail", async (req, res) => {
   const receiver = {
     from: process.env.MAIL_USER,
     to: email,
-    subject: "gay",
-    text: "Hello bhadwa farji friend",
+    subject: "new issue created",
+    text: "At x repository, a new issue has been created",  
   };
-
+  console.log("reached nodemailer");
   auth.sendMail(receiver, (error, emailResponse) => {
     if (error) {
       console.error(error ? error.message : "Unknown error occurred");
