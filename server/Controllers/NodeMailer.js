@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post("/sendmail", async (req, res) => {
   console.log(req.body);
-  const {email} = req.body;
+  const {email,repo_name,issue_url} = req.body;
   let user = await UserModel.findOne({ email: email });
   console.log("email is ",email,"user is ",user);
   if(!user){
@@ -26,8 +26,8 @@ router.post("/sendmail", async (req, res) => {
   const receiver = {
     from: process.env.MAIL_USER,
     to: email,
-    subject: "new issue created",
-    text: "At x repository, a new issue has been created",  
+    subject: `NEW ISSUE - ${repo_name}`,
+    text: `Link to new issue is - ${issue_url}`,
   };
   console.log("reached nodemailer");
   auth.sendMail(receiver, (error, emailResponse) => {

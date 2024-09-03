@@ -17,6 +17,10 @@ const RepoSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    particular_user:{
+        type: String,
+        required: false,
+    },
     UserId: {type: mongoose.Schema.Types.ObjectId,ref: "users",required: true},
 });
 const RepoModel = mongoose.model('repos',RepoSchema);

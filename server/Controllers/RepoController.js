@@ -19,10 +19,9 @@ router.get("/:userID", async (req, res) => {
 
 router.post("/create", async (req, res) => {
   try {
-    
-    const { repo_url, UserId } = req.body;
-    console.log(repo_url)
-    console.log(UserId)
+    const { repo_url, particular_user, UserId } = req.body;
+    console.log(repo_url);
+    console.log(UserId);
 
     const repo = await RepoModel.findOne({ repo_url });
     if (repo && repo.UserId == UserId) {
@@ -32,18 +31,20 @@ router.post("/create", async (req, res) => {
     const data = repo_url.slice(19);
     const repo_name = data.split("/")[1];
     const response = await fetch(`https://api.github.com/repos/${data}/issues`);
-    console.log(`https://api.github.com/repos/${data}/issues`)
+    console.log(`https://api.github.com/repos/${data}/issues`);
     const issues = await response.json();
     const latest_issue = issues[0];
     const last_issue_id = latest_issue.number;
     const last_issue_link = latest_issue.html_url;
-    const newRepo = new RepoModel({
+    const upload = {
       repo_name,
       repo_url,
       last_issue_id,
       last_issue_link,
       UserId,
-    });
+      ...(particular_user && { particular_user })
+    };
+    const newRepo = new RepoModel(upload);
     await newRepo.save();
     const user = await UserModel.findById({ _id: UserId });
     user.repos.push(newRepo);
@@ -74,13 +75,14 @@ router.delete("/:repoId", async (req, res) => {
 });
 
 router.put("/update", async (req, res) => {
-  const { id, latest_issue_id } = req.body;
+  const { id, latest_issue_id , lastest_issue_link} = req.body;
   const repo = await RepoModel.findById(id);
-  if(repo && repo.last_issue_id){
-  if (latest_issue_id!=null || latest_issue_id!=undefined){
-    repo.last_issue_id = latest_issue_id;
-  }
-  await repo.save();
+  if (repo && repo.last_issue_id) {
+    if (latest_issue_id != null || latest_issue_id != undefined) {
+      repo.last_issue_id = latest_issue_id;
+      repo.last_issue_link = lastest_issue_link;
+    }
+    await repo.save();
   }
 });
 

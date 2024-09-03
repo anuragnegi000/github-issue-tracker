@@ -4,7 +4,7 @@ import { StarsBackground } from "@/components/ui/stars-background";
 import PlaceholdersAndVanishInputDemo from "../../components/Text-input";
 import { Button } from "@/components/ui/button";
 import { useData } from "../Home/dataContext";
-import { Popover } from "@/components/ui/popover";
+// import { Popover } from "@/components/ui/popover";
 
 export default function Home() {
   const { data, setData, fetchData } = useData();
@@ -14,6 +14,7 @@ export default function Home() {
   }, []);
 
   const checkRepo = async () => {
+    console.log(data);
     if (window.localStorage.getItem("token") == null) {
       return;
     }
@@ -23,27 +24,53 @@ export default function Home() {
       const repoDetails = currentRepo.split("/").slice(-2);
       const repo_name = repoDetails[1];
       const repo_user = repoDetails[0];
-
+      console.log(currentRepo);
       const response = await fetch(
         `https://api.github.com/repos/${repo_user}/${repo_name}/issues`
       );
 
       const issues = await response.json();
       const latest_issue = issues[0]?.number;
-
+      console.log(latest_issue);
       if (data[i].last_issue_id < latest_issue) {
+          //for updating the last_issue_id in data 
+        const copyData = data;
+        copyData.last_issue_id = latest_issue;
+        const latest_issue_link = issues[0].html_url;
+        copyData.last_issue_link = latest_issue_link;
+        setData(copyData);
         dataUpdated = true;
-
-        await fetch("http://localhost:8080/sendmail", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({
-            email: localStorage.getItem("loggedInEmail"),
-          }),
-        });
+        
+        console.log(latest_issue_link);
+        if(data[i].particular_user != null || data[i].particular_user !=undefined){
+          if(issues[0].user.login==data[i].particular_user){
+            await fetch("http://localhost:8080/sendmail", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+              body: JSON.stringify({                          
+                repo_name: data[i].repo_name,
+                issue_url: data[i].last_issue_link,
+                email: localStorage.getItem("loggedInEmail"),
+              }),
+            });
+          }
+        }else{
+          await fetch("http://localhost:8080/sendmail", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({
+              repo_name: data[i].repo_name,
+              issue_url: data[i].last_issue_link,
+              email: localStorage.getItem("loggedInEmail"),
+            }),
+          }); 
+        }
 
         const id = data[i]._id;
 
@@ -56,6 +83,7 @@ export default function Home() {
           body: JSON.stringify({
             id,
             latest_issue_id: latest_issue,
+            latest_issue_link: latest_issue_link
           }),
         });
       }
@@ -63,6 +91,7 @@ export default function Home() {
     if (dataUpdated) {
       fetchData();
     }
+  
   };
 
   useEffect(() => {
@@ -102,7 +131,7 @@ export default function Home() {
                 <h1 className="relative z-10 text-3xl md:text-xl md:leading-tight max-w-5xl mx-auto text-center tracking-tight font-medium bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-white to-white flex items-center gap-2 md:gap-8">
                   {item.repo_name}
                 </h1>
-                <Popover/>
+                {/* <Popover/> */}
               </div>
               <Button
                 className="border border-white rounded-md p-2"
