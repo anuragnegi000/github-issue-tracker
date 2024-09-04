@@ -24,6 +24,7 @@ router.post("/create", async (req, res) => {
     console.log(UserId);
 
     const repo = await RepoModel.findOne({ repo_url });
+    console.log(repo)
     if (repo && repo.UserId == UserId) {
       return res.json({ message: "repository already exists !" });
     }
@@ -75,15 +76,29 @@ router.delete("/:repoId", async (req, res) => {
 });
 
 router.put("/update", async (req, res) => {
-  const { id, latest_issue_id , lastest_issue_link} = req.body;
+  const { id, latest_issue_id , latest_issue_link} = req.body;
   const repo = await RepoModel.findById(id);
+  try{
   if (repo && repo.last_issue_id) {
+    console.log("Reached in first condition")
     if (latest_issue_id != null || latest_issue_id != undefined) {
+      console.log("Reached in second condition")
       repo.last_issue_id = latest_issue_id;
-      repo.last_issue_link = lastest_issue_link;
+      repo.last_issue_link = latest_issue_link;
+      console.log("before save")
+      await repo.save();
+      console.log(repo)
+
     }
-    await repo.save();
+    
+    res.json({
+      success: true,
+      message: "repository updated successfully",
+    })
   }
+}catch(error){  
+  res.json({message:"error updating"})
+}
 });
 
 module.exports = router;

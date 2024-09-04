@@ -21,7 +21,7 @@ export default function PlaceholdersAndVanishInputDemo() {
   const onSubmit = async () => {
     try {
       const url = data;
-      const response = await fetch("http://localhost:8080/repos/create", {
+      const response = await fetch(`${process.env.SERVER_URL}/repos/create`, { 
         method: "POST",
         headers: {
           "Content-Type": "application/json",

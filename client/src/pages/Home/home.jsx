@@ -4,6 +4,7 @@ import { StarsBackground } from "@/components/ui/stars-background";
 import PlaceholdersAndVanishInputDemo from "../../components/Text-input";
 import { Button } from "@/components/ui/button";
 import { useData } from "../Home/dataContext";
+import { PopoverDemo } from "@/components/Popover";
 // import { Popover } from "@/components/ui/popover";
 
 export default function Home() {
@@ -44,7 +45,7 @@ export default function Home() {
         console.log(latest_issue_link);
         if(data[i].particular_user != null || data[i].particular_user !=undefined){
           if(issues[0].user.login==data[i].particular_user){
-            await fetch("http://localhost:8080/sendmail", {
+            await fetch(`${process.env.SERVER_URL}/sendmail`, { 
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -58,7 +59,7 @@ export default function Home() {
             });
           }
         }else{
-          await fetch("http://localhost:8080/sendmail", {
+          await fetch(`${process.env.SERVER_URL}/sendmail`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -74,7 +75,7 @@ export default function Home() {
 
         const id = data[i]._id;
 
-        await fetch("http://localhost:8080/repos/update", {
+        await fetch(`${process.env.SERVER_URL}/repos/update`, { 
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -103,7 +104,7 @@ export default function Home() {
   }, [data]);
 
   const deleteRepo = async (repo_id) => {
-    await fetch(`http://localhost:8080/repos/${repo_id}`, {
+    await fetch(`${process.env.SERVER_URL}/repos/${repo_id}`, {
       method: "DELETE",
     });
     setData((prevData) => {
@@ -131,7 +132,7 @@ export default function Home() {
                 <h1 className="relative z-10 text-3xl md:text-xl md:leading-tight max-w-5xl mx-auto text-center tracking-tight font-medium bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-white to-white flex items-center gap-2 md:gap-8">
                   {item.repo_name}
                 </h1>
-                {/* <Popover/> */}
+                <PopoverDemo/>
               </div>
               <Button
                 className="border border-white rounded-md p-2"
