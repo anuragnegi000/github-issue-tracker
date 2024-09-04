@@ -33,7 +33,7 @@ export default function Signup() {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/auth/signup", {
+      const response = await fetch(`${process.env.SERVER_URL}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
