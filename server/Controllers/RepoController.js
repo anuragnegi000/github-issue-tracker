@@ -1,10 +1,11 @@
+const ensureAuthenticated = require("../Middlewares/AuthEnsure.js");
 const RepoModel = require("../Models/Repos.js");
 const UserModel = require("../Models/Users");
 const express = require("express");
 
 const router = express.Router();
 
-router.get("/:userID", async (req, res) => {
+router.get("/:userID", ensureAuthenticated,async (req, res) => {
   try {
     const user = await UserModel.findById(req.params.userID);
     const repos = await RepoModel.find({
@@ -17,7 +18,7 @@ router.get("/:userID", async (req, res) => {
   }
 });
 
-router.post("/create", async (req, res) => {
+router.post("/create", ensureAuthenticated ,async (req, res) => {
   try {
     const { repo_url, particular_user, UserId } = req.body;
     console.log(repo_url);
@@ -56,7 +57,7 @@ router.post("/create", async (req, res) => {
   }
 });
 
-router.delete("/:repoId", async (req, res) => {
+router.delete("/:repoId", ensureAuthenticated,async (req, res) => {
   try {
     const id = req.params.repoId;
     const repo = await RepoModel.findById(id);
@@ -75,7 +76,7 @@ router.delete("/:repoId", async (req, res) => {
   }
 });
 
-router.put("/update", async (req, res) => {
+router.put("/update",ensureAuthenticated, async (req, res) => {
   const { id, latest_issue_id , latest_issue_link} = req.body;
   const repo = await RepoModel.findById(id);
   try{
@@ -99,6 +100,18 @@ router.put("/update", async (req, res) => {
 }catch(error){  
   res.json({message:"error updating"})
 }
+});
+
+router.put("/update/user",ensureAuthenticated,async(req,res)=>{
+  console.log("agaya idhard")
+  const {repo_id,particular_user}  = req.body;
+  const repo = await RepoModel.findById(repo_id);
+  if(repo){
+    repo.particular_user = particular_user;
+    await repo.save();
+  }else{
+    res.json({message:"error updating"})
+  }
 });
 
 module.exports = router;

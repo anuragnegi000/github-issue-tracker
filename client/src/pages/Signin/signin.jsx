@@ -10,6 +10,7 @@ import {
   IconBrandOnlyfans,
 } from "@tabler/icons-react";
 
+
 export default function Signin() {
   const [LoginInfo, setLoginInfo] = useState({
     email: "",
@@ -24,7 +25,7 @@ export default function Signin() {
       return handleError("email and password are required ");
     }
     try {
-      const url = `${import.meta.env.SERVER_URL}/auth/login`;
+      const url = "http://localhost:8080/auth/login";
       const response = await fetch(url, {
         method: "POST",
         headers: {

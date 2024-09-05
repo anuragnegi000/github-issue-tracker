@@ -7,7 +7,12 @@ export const DataProvider = ({children})=>{
 
     const fetchData = async ()=>{
         try{
-            const response = await fetch(`${process.env.SERVER_URL}/repos/${localStorage.getItem("UserId")}`);
+            const response = await fetch(`http://localhost:8080/repos/${localStorage.getItem("UserId")}`,{
+                method:"GET",
+                headers: {
+                  'Authorization': window.localStorage.getItem("token"),
+                }
+              });
             const result = await response.json();
             setData(result.repos || []);
 

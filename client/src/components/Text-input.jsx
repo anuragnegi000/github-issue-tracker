@@ -5,6 +5,7 @@
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import { useState } from "react";
 import { useData } from "../pages/Home/dataContext";
+import SERVER_URL from "../../config";
 
 export default function PlaceholdersAndVanishInputDemo() {
   const { fetchData } = useData();
@@ -21,11 +22,11 @@ export default function PlaceholdersAndVanishInputDemo() {
   const onSubmit = async () => {
     try {
       const url = data;
-      const response = await fetch(`${process.env.SERVER_URL}/repos/create`, { 
+      const response = await fetch(`${SERVER_URL}/repos/create`, { 
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          'Authorization': localStorage.getItem("token"),
         },
         body: JSON.stringify({
           UserId: localStorage.getItem("UserId"),

@@ -33,41 +33,40 @@ export default function Home() {
       const issues = await response.json();
       const latest_issue = issues[0]?.number;
       console.log(latest_issue);
-      if (data[i].last_issue_id < latest_issue) {
-          //for updating the last_issue_id in data 
+      if (data[i].last_issue_id < latest_issue) { 
         const copyData = data;
-        copyData.last_issue_id = latest_issue;
+        copyData[i].last_issue_id = latest_issue;
         const latest_issue_link = issues[0].html_url;
-        copyData.last_issue_link = latest_issue_link;
+        copyData[i].last_issue_link = latest_issue_link;
         setData(copyData);
         dataUpdated = true;
         
         console.log(latest_issue_link);
-        if(data[i].particular_user != null || data[i].particular_user !=undefined){
+        if((data[i].particular_user != null || data[i].particular_user !=undefined) && data[i].particular_user!=""){
           if(issues[0].user.login==data[i].particular_user){
-            await fetch(`${process.env.SERVER_URL}/sendmail`, { 
+            await fetch(`http://localhost:8080/sendmail`, { 
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                'Authorization': window.localStorage.getItem("token"),
               },
               body: JSON.stringify({                          
                 repo_name: data[i].repo_name,
-                issue_url: data[i].last_issue_link,
+                issue_url: latest_issue_link,
                 email: localStorage.getItem("loggedInEmail"),
               }),
             });
           }
         }else{
-          await fetch(`${process.env.SERVER_URL}/sendmail`, {
+          await fetch("http://localhost:8080/sendmail", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              'Authorization': window.localStorage.getItem("token"),
             },
             body: JSON.stringify({
               repo_name: data[i].repo_name,
-              issue_url: data[i].last_issue_link,
+              issue_url: latest_issue_link,
               email: localStorage.getItem("loggedInEmail"),
             }),
           }); 
@@ -75,11 +74,11 @@ export default function Home() {
 
         const id = data[i]._id;
 
-        await fetch(`${process.env.SERVER_URL}/repos/update`, { 
+        await fetch("http://localhost:8080/repos/update", { 
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            'Authorization': window.localStorage.getItem("token"),
           },
           body: JSON.stringify({
             id,
@@ -104,8 +103,11 @@ export default function Home() {
   }, [data]);
 
   const deleteRepo = async (repo_id) => {
-    await fetch(`${process.env.SERVER_URL}/repos/${repo_id}`, {
+    await fetch(`http://localhost:8080/repos/${repo_id}`, {
       method: "DELETE",
+      headers: {
+        'Authorization': window.localStorage.getItem("token"),
+      },
     });
     setData((prevData) => {
       return prevData.filter((item) => item._id !== repo_id);
@@ -132,7 +134,7 @@ export default function Home() {
                 <h1 className="relative z-10 text-3xl md:text-xl md:leading-tight max-w-5xl mx-auto text-center tracking-tight font-medium bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-white to-white flex items-center gap-2 md:gap-8">
                   {item.repo_name}
                 </h1>
-                <PopoverDemo/>
+                <PopoverDemo default_value = {item.particular_user} idx = {index} repo_id = {item._id}/>
               </div>
               <Button
                 className="border border-white rounded-md p-2"
