@@ -1,11 +1,6 @@
-// src/components/Text-input.js
-
-"use client";
-
+import { useState, useEffect } from "react";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
-import { useState } from "react";
 import { useData } from "../pages/Home/dataContext";
-import SERVER_URL from "../../config";
 
 export default function PlaceholdersAndVanishInputDemo() {
   const { fetchData } = useData();
@@ -18,11 +13,20 @@ export default function PlaceholdersAndVanishInputDemo() {
   ];
 
   const [data, setData] = useState("");
+  const [serverUrl, setServerUrl] = useState("");
+
+  useEffect(() => {
+    const loadConfig = async () => {
+      const config = await import("../../config");
+      setServerUrl(config.default || config); // Handle both default and named exports
+    };
+    loadConfig();
+  }, []);
 
   const onSubmit = async () => {
     try {
       const url = data;
-      const response = await fetch(`${SERVER_URL}/repos/create`, { 
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/repos/create`, { 
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -3,7 +3,7 @@ import { ShootingStars } from "@/components/ui/shooting-stars";
 import { StarsBackground } from "@/components/ui/stars-background";
 import PlaceholdersAndVanishInputDemo from "../../components/Text-input";
 import { Button } from "@/components/ui/button";
-import { useData } from "./dataContext";
+import { useData } from "../Home/dataContext";
 import { PopoverDemo } from "@/components/Popover";
 // import { Popover } from "@/components/ui/popover";
 
@@ -44,7 +44,7 @@ export default function Home() {
         console.log(latest_issue_link);
         if((data[i].particular_user != null || data[i].particular_user !=undefined) && data[i].particular_user!=""){
           if(issues[0].user.login==data[i].particular_user){
-            await fetch(`${import.meta.env.VITE_BASE_URL}/sendmail`, { 
+            await fetch(`http://localhost:8080/sendmail`, { 
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -58,7 +58,7 @@ export default function Home() {
             });
           }
         }else{
-          await fetch(`${import.meta.env.VITE_BASE_URL}/sendmail`, { 
+          await fetch("http://localhost:8080/sendmail", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -74,7 +74,7 @@ export default function Home() {
 
         const id = data[i]._id;
 
-        await fetch(`${import.meta.env.VITE_BASE_URL}/repos/update`, { 
+        await fetch("http://localhost:8080/repos/update", { 
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -103,7 +103,7 @@ export default function Home() {
   }, [data]);
 
   const deleteRepo = async (repo_id) => {
-    await fetch(`${import.meta.env.VITE_BASE_URL}/repos/${repo_id}`, {
+    await fetch(`http://localhost:8080/repos/${repo_id}`, {
       method: "DELETE",
       headers: {
         'Authorization': window.localStorage.getItem("token"),

@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { useEffect, useState } from "react"
-import { useData } from '../Pages/Home/dataContext'
+import { useData } from '../pages/Home/dataContext'
 export function PopoverDemo(props) {
   const [particular_user,setParticularUser] = useState('');
   const [default_value, setDefaultValue] = useState('');
