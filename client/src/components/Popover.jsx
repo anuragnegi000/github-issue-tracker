@@ -29,7 +29,7 @@ export function PopoverDemo(props) {
   const updateUser = async() => {
     console.log('hereasd');
     setDefaultValue(particular_user);
-    await fetch("http://localhost:8080/repos/update/user", { 
+    await fetch(`${import.meta.env.VITE_SERVER_URL}/repos/update/user`, {  
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
