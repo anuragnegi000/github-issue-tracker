@@ -17,6 +17,9 @@ app.use(cors());
 app.use('/auth',AuthRouter);
 app.use('/repos',RepoRouter);
 app.use('/',NodeMailerRouter);
+app.get("/", (req, res) => {
+    res.send("Hello World");
+  });
 const PORT = process.env.PORT;
 
 app.listen(PORT,()=>{
