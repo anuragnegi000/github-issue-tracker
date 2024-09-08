@@ -35,7 +35,9 @@ router.post("/create", ensureAuthenticated ,async (req, res) => {
     const response = await fetch(`https://api.github.com/repos/${data}/issues`);
     console.log(`https://api.github.com/repos/${data}/issues`);
     const issues = await response.json();
+    console.log("issues is",issues);
     const latest_issue = issues[0];
+    console.log("latest_issue is",latest_issue);
     const last_issue_id = latest_issue.number;
     const last_issue_link = latest_issue.html_url;
     const upload = {
