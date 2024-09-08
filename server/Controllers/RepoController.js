@@ -46,13 +46,17 @@ router.post("/create", ensureAuthenticated ,async (req, res) => {
       UserId,
       ...(particular_user && { particular_user })
     };
+    console.log("Reached here-----111")
     const newRepo = new RepoModel(upload);
     await newRepo.save();
+    console.log("Repo saved---------------")
     const user = await UserModel.findById({ _id: UserId });
     user.repos.push(newRepo);
     await user.save();
+    console.log("user saved--------------------")
     return res.json({ success: true, message: "repo created successfully" });
   } catch (error) {
+    console.log(error);
     return res.json({ message: error });
   }
 });
